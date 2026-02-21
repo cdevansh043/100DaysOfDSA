@@ -53,7 +53,7 @@ int main() {
         if (curr->next == NULL)
             printf("%d", curr->data);
         else
-            printf("%d -> ", curr->data);
+            printf("%d ", curr->data);
         curr = curr->next;
     }
     printf("\n");
