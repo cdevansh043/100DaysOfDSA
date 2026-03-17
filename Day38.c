@@ -32,7 +32,7 @@
 // - Sequence of deque operations with values (if applicable)
 //
 // Output:
-// - Results of operations such as front, back, size, or the final state of the deque after all operations
+// - Results of operations such as front, back, size, or the final state of the deque after all operations.
 
 
 #include <stdio.h>
