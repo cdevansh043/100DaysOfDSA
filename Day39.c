@@ -90,6 +90,7 @@ void extractMin() {
 void peek() {
     if (size == 0) { printf("-1\n"); return; }
     printf("%d\n", heap[0]);
+
 }
 
 /* ── main ───────────────────────────────────────────────────── */
