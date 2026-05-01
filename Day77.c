@@ -1,80 +1,67 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <limits.h>
 
-typedef struct {
-    int to;
-    int weight;
-} Edge;
+void dfs(int v, int **adj, int *degree, int *visited) {
+    visited[v] = 1;
+    for (int i = 0; i < degree[v]; i++) {
+        int neighbor = adj[v][i];
+        if (!visited[neighbor]) {
+            dfs(neighbor, adj, degree, visited);
+        }
+    }
+}
 
 int main() {
     int n, m;
     if (scanf("%d %d", &n, &m) != 2) return 0;
 
-    int *degree = (int *)calloc(n + 1, sizeof(int));
-    int (*input_edges)[3] = malloc(m * sizeof(*input_edges));
-
-    for (int i = 0; i < m; i++) {
-        scanf("%d %d %d", &input_edges[i][0], &input_edges[i][1], &input_edges[i][2]);
-        degree[input_edges[i][0]]++;
-        degree[input_edges[i][1]]++;
+    if (n == 0) {
+        printf("CONNECTED\n");
+        return 0;
     }
 
-    Edge **adj = (Edge **)malloc((n + 1) * sizeof(Edge *));
+    int **adj = (int **)malloc((n + 1) * sizeof(int *));
+    int *degree = (int *)calloc((n + 1), sizeof(int));
+    int *visited = (int *)calloc((n + 1), sizeof(int));
+    int (*edges)[2] = malloc(m * sizeof(*edges));
+
+    for (int i = 0; i < m; i++) {
+        scanf("%d %d", &edges[i][0], &edges[i][1]);
+        degree[edges[i][0]]++;
+        degree[edges[i][1]]++;
+    }
+
     for (int i = 1; i <= n; i++) {
-        adj[i] = (Edge *)malloc(degree[i] * sizeof(Edge));
+        adj[i] = (int *)malloc(degree[i] * sizeof(int));
     }
 
-    int *current_pos = (int *)calloc(n + 1, sizeof(int));
+    int *temp_degree = (int *)calloc((n + 1), sizeof(int));
     for (int i = 0; i < m; i++) {
-        int u = input_edges[i][0];
-        int v = input_edges[i][1];
-        int w = input_edges[i][2];
-        adj[u][current_pos[u]].to = v;
-        adj[u][current_pos[u]++].weight = w;
-        adj[v][current_pos[v]].to = u;
-        adj[v][current_pos[v]++].weight = w;
+        int u = edges[i][0];
+        int v = edges[i][1];
+        adj[u][temp_degree[u]++] = v;
+        adj[v][temp_degree[v]++] = u;
     }
 
-    int *key = (int *)malloc((n + 1) * sizeof(int));
-    int *inMST = (int *)calloc(n + 1, sizeof(int));
-    for (int i = 1; i <= n; i++) key[i] = INT_MAX;
+    dfs(1, adj, degree, visited);
 
-    key[1] = 0;
-    int total_weight = 0;
-
-    for (int count = 0; count < n; count++) {
-        int u = -1, min = INT_MAX;
-        for (int v = 1; v <= n; v++) {
-            if (!inMST[v] && key[v] < min) {
-                min = key[v];
-                u = v;
-            }
-        }
-
-        if (u == -1) break;
-
-        inMST[u] = 1;
-        total_weight += key[u];
-
-        for (int i = 0; i < degree[u]; i++) {
-            int v = adj[u][i].to;
-            int weight = adj[u][i].weight;
-            if (!inMST[v] && weight < key[v]) {
-                key[v] = weight;
-            }
+    int connected = 1;
+    for (int i = 1; i <= n; i++) {
+        if (!visited[i]) {
+            connected = 0;
+            break;
         }
     }
 
-    printf("%d\n", total_weight);
+    if (connected) printf("CONNECTED\n");
+    else printf("NOT CONNECTED\n");
 
     for (int i = 1; i <= n; i++) free(adj[i]);
     free(adj);
     free(degree);
-    free(input_edges);
-    free(current_pos);
-    free(key);
-    free(inMST);
+    free(visited);
+    free(temp_degree);
+    free(edges);
 
     return 0;
 }
